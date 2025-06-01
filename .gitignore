@@ -1,0 +1,60 @@
+# Byte-compiled / optimized / DLL files
+__pycache__/
+*.py[cod]
+*.so
+
+# Jupyter Notebook checkpoints
+.ipynb_checkpoints
+
+# Virtual environments
+venv/
+.env/
+.envrc
+
+# Python egg files
+*.egg
+*.egg-info/
+dist/
+build/
+
+# Terraform state and crash files
+terraform/.terraform/
+terraform/terraform.tfstate
+terraform/terraform.tfstate.*
+terraform/.terraform.lock.hcl
+*.tfplan
+
+# AWS CLI credentials and config (never commit secrets)
+.aws/
+*.pem
+
+# Jenkins and build artifacts
+jenkins_home/
+*.log
+
+# Docker
+docker/*.pid
+docker/*.sock
+
+# VSCode settings
+.vscode/
+
+# OS generated files
+.DS_Store
+Thumbs.db
+
+# Output, temp, and archive files
+*.out
+*.bak
+*.tmp
+*.swp
+*.zip
+
+# Monitoring and pipeline outputs
+lambda_output.json
+
+# Ignore project images (optional, if not versioning architecture images)
+# projects-pics/
+
+# Ignore secrets and sensitive files (add your own patterns as needed)
+secrets.*

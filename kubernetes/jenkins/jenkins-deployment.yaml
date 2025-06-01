@@ -1,0 +1,37 @@
+---
+# This Kubernetes manifest deploys Jenkins as a Deployment resource.
+# Jenkins is a popular automation server for CI/CD pipelines.
+
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: jenkins                # Name of the Deployment resource
+  labels:
+    app: jenkins               # Label for selecting this app
+spec:
+  replicas: 1                  # Number of Jenkins pods to run (increase for HA)
+  selector:
+    matchLabels:
+      app: jenkins             # Selector to match pods with this label
+  template:
+    metadata:
+      labels:
+        app: jenkins           # Pod label for selection and service discovery
+    spec:
+      containers:
+        - name: jenkins
+          image: jenkins/jenkins:lts  # Official Jenkins LTS Docker image
+          ports:
+            - containerPort: 8080     # Jenkins web UI
+            - containerPort: 50000    # Jenkins agent communication
+          volumeMounts:
+            - name: jenkins-home
+              mountPath: /var/jenkins_home  # Persist Jenkins data
+      volumes:
+        - name: jenkins-home
+          emptyDir: {}                # Use an ephemeral volume (replace with PVC for persistence)
+
+# Notes:
+# - For production, replace 'emptyDir' with a PersistentVolumeClaim to persist Jenkins data.
+# - Expose this deployment with a Service for network access.
+# - You can add resource requests/limits and environment variables as needed.

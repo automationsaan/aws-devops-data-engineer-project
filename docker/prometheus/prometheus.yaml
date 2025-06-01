@@ -1,0 +1,31 @@
+# Prometheus configuration file
+# Pulls metrics from Jenkins and Kubernetes nodes
+# Extended to include Redshift, Glue, Lambda, and DMS metrics via exporters
+
+global:
+  scrape_interval: 15s  # How often Prometheus scrapes targets
+
+scrape_configs:
+  # Scrape Jenkins metrics (requires Prometheus plugin in Jenkins)
+  - job_name: 'jenkins'
+    metrics_path: /prometheus  # Jenkins Prometheus plugin exposes metrics here
+    static_configs:
+      - targets: ['jenkins:8080']  # Update if Jenkins runs elsewhere
+
+  # Scrape Kubernetes node metrics
+  - job_name: 'kubernetes-nodes'
+    kubernetes_sd_configs:
+      - role: node
+    relabel_configs:
+      - action: labelmap
+        regex: __meta_kubernetes_node_label_(.+)
+
+  # Scrape AWS CloudWatch Exporter for Redshift, Glue, Lambda, DMS metrics
+  - job_name: 'cloudwatch-exporter'
+    metrics_path: /metrics
+    static_configs:
+      - targets: ['cloudwatch-exporter:9106']  # Update if exporter runs elsewhere
+
+# Notes:
+# - The 'cloudwatch-exporter' job assumes you have a CloudWatch Exporter running and configured to pull Redshift, Glue, Lambda, and DMS metrics.
+# - Add or adjust targets as needed for your environment.

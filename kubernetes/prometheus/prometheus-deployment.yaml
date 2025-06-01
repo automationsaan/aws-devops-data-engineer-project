@@ -1,0 +1,39 @@
+---
+# This Kubernetes manifest deploys Prometheus as a Deployment resource.
+# Prometheus is used for monitoring and scraping metrics from your infrastructure.
+
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: prometheus                # Name of the Deployment resource
+  labels:
+    app: prometheus               # Label for selecting this app
+spec:
+  replicas: 1                     # Number of Prometheus pods to run
+  selector:
+    matchLabels:
+      app: prometheus             # Selector to match pods with this label
+  template:
+    metadata:
+      labels:
+        app: prometheus           # Pod label for selection and service discovery
+    spec:
+      containers:
+        - name: prometheus
+          image: prom/prometheus  # Official Prometheus Docker image
+          args:
+            - "--config.file=/etc/prometheus/prometheus.yml"  # Specify config file location
+          ports:
+            - containerPort: 9090     # Prometheus web UI
+          volumeMounts:
+            - name: prometheus-config
+              mountPath: /etc/prometheus/  # Mount config directory
+      volumes:
+        - name: prometheus-config
+          configMap:
+            name: prometheus-config      # Reference to a ConfigMap with your prometheus.yml
+
+# Notes:
+# - This manifest expects a ConfigMap named 'prometheus-config' containing prometheus.yml.
+# - For persistent storage, add a PersistentVolumeClaim and mount it to /prometheus.
+# - Expose this deployment with a Service for network access.

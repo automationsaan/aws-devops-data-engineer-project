@@ -1,0 +1,39 @@
+FROM jenkins/jenkins:lts
+USER root
+RUN apt-get update && apt-get install -y python3 python3-pip
+USER jenkins
+
+---
+# Ansible playbook to deploy Grafana using Docker
+# This playbook assumes the target host is accessible and has Ansible connectivity.
+
+- name: Deploy Grafana
+  hosts: grafana                # The inventory group or host where Grafana should be deployed
+  become: yes                   # Run tasks with sudo/root privileges
+  tasks:
+    - name: Install Docker      # Ensure Docker is installed on the target host
+      apt:
+        name: docker.io
+        state: present
+      tags: install
+
+    - name: Start Docker service # Make sure Docker service is running
+      service:
+        name: docker
+        state: started
+        enabled: yes
+      tags: install
+
+    - name: Run Grafana container # Deploy Grafana as a Docker container
+      docker_container:
+        name: grafana
+        image: grafana/grafana
+        state: started
+        restart_policy: always
+        ports:
+          - "3000:3000"         # Map host port 3000 to container port 3000
+      tags: deploy
+
+    # Optionally, you can mount a dashboard or config here if needed
+    # volumes:
+    #   - /path/on/host:/var/lib/grafana

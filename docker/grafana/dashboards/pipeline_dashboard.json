@@ -1,0 +1,35 @@
+{
+  // The "annotations" section allows you to overlay events or markers on your dashboard graphs.
+  // Here, it's empty, but you can add annotation queries for deployments, incidents, etc.
+  "annotations": {
+    "list": []
+  },
+
+  // The "panels" array defines the visualizations (graphs, tables, etc.) shown on the dashboard.
+  // Each object in this array is a panel. You can add as many as you need for different metrics.
+  "panels": [
+    {
+      // "type": The type of visualization. "graph" creates a time series line chart.
+      "type": "graph",
+      // "title": The panel's title, shown at the top of the graph.
+      "title": "Jenkins Build Duration",
+      // "targets": The Prometheus queries (PromQL) that provide data for this panel.
+      "targets": [
+        {
+          // "expr": The PromQL expression to fetch Jenkins build duration metrics.
+          // This metric must be exposed by Jenkins and scraped by Prometheus.
+          "expr": "jenkins_job_duration_seconds",
+          // "format": The data format expected by Grafana for this panel.
+          "format": "time_series"
+        }
+      ]
+    }
+    // You can add more panel objects here for other metrics (e.g., Lambda, DMS, Glue, Redshift).
+    // Each panel should have its own "type", "title", and "targets" with the appropriate PromQL query.
+  ],
+
+  // "title": The name of the dashboard, shown at the top in Grafana.
+  "title": "Pipeline Dashboard",
+  // "uid": A unique identifier for the dashboard, useful for referencing and importing.
+  "uid": "pipeline-dashboard"
+}

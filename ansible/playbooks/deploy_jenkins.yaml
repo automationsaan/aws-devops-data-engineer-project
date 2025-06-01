@@ -1,0 +1,41 @@
+---
+# Ansible playbook to deploy Jenkins using Docker
+# This playbook assumes the target host is accessible and has Ansible connectivity.
+
+- name: Deploy Jenkins
+  hosts: jenkins                # The inventory group or host where Jenkins should be deployed
+  become: yes                   # Run tasks with sudo/root privileges
+  tasks:
+    - name: Install Docker      # Ensure Docker is installed on the target host
+      apt:
+        name: docker.io
+        state: present
+      tags: install
+
+    - name: Start Docker service # Make sure Docker service is running
+      service:
+        name: docker
+        state: started
+        enabled: yes
+      tags: install
+
+    - name: Run Jenkins container # Deploy Jenkins as a Docker container
+      docker_container:
+        name: jenkins
+        image: jenkins/jenkins:lts
+        state: started
+        restart_policy: always
+        ports:
+          - "8080:8080"         # Map host port 8080 to container port 8080
+          - "50000:50000"       # Map host port 50000 to container port 50000 (for agents)
+        volumes:
+          - jenkins_home:/var/jenkins_home  # Persist Jenkins data
+      tags: deploy
+
+    # Optionally, you can mount custom configuration or plugins here if needed
+    # volumes:
+    #   - /path/on/host:/var/jenkins_home
+
+# Note:
+# - This playbook installs Docker, ensures the service is running, and deploys Jenkins in a container.
+# - The Jenkins home directory is persisted using a Docker volume for data durability.

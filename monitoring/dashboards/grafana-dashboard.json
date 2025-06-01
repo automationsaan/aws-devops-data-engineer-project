@@ -1,0 +1,85 @@
+{
+  // This dashboard visualizes the health and performance of the CI/CD and data pipeline stack.
+  // It aggregates metrics from Jenkins, AWS Lambda, DMS, Glue, and Redshift via Prometheus exporters.
+  // Each panel is designed to provide actionable insights for DevOps and Data Engineering teams.
+
+  "annotations": {
+    "list": []
+    // Annotations can be used to mark deployments, incidents, or other key events on the dashboard timeline.
+  },
+  "panels": [
+    {
+      // Jenkins Build Duration Panel
+      // Shows the duration of Jenkins jobs over time.
+      // Purpose: Quickly identify slow builds or performance regressions in CI/CD.
+      "type": "graph",
+      "title": "Jenkins Build Duration",
+      "targets": [
+        {
+          "expr": "jenkins_job_duration_seconds", // Metric from Jenkins Prometheus exporter
+          "format": "time_series"
+        }
+      ]
+    },
+    {
+      // Lambda Duration Panel
+      // Displays the average execution time of AWS Lambda functions.
+      // Purpose: Detect performance issues, cold starts, or unexpected increases in Lambda runtimes.
+      "title": "Lambda Duration",
+      "type": "graph",
+      "targets": [
+        {
+          "expr": "aws_lambda_duration_average", // Metric from Lambda exporter or CloudWatch exporter
+          "legendFormat": "{{FunctionName}}",    // Groups data by Lambda function name for clarity
+          "interval": "",
+          "refId": "A"
+        }
+      ]
+    },
+    {
+      // DMS Replication Latency Panel
+      // Visualizes the replication latency for AWS Database Migration Service (DMS) tasks.
+      // Purpose: Monitor data synchronization delays and ensure timely data movement between sources and targets.
+      "title": "DMS Replication Latency",
+      "type": "graph",
+      "targets": [
+        {
+          "expr": "aws_dms_replicationlatency_average", // Metric from DMS exporter
+          "legendFormat": "{{ReplicationTaskIdentifier}}", // Groups by DMS task
+          "refId": "B"
+        }
+      ]
+    },
+    {
+      // Glue Job Runtime Panel
+      // Tracks the average runtime of AWS Glue ETL jobs.
+      // Purpose: Identify slow or failing ETL jobs and optimize data transformation processes.
+      "title": "Glue Job Runtime",
+      "type": "graph",
+      "targets": [
+        {
+          "expr": "aws_glue_jobruntime_average", // Metric from Glue exporter
+          "legendFormat": "{{JobName}}",         // Groups by Glue job name
+          "refId": "C"
+        }
+      ]
+    },
+    {
+      // Redshift CPU Utilization Panel
+      // Monitors CPU usage for AWS Redshift clusters.
+      // Purpose: Detect resource bottlenecks, plan for scaling, and ensure cluster health.
+      "title": "Redshift CPU Utilization",
+      "type": "graph",
+      "targets": [
+        {
+          "expr": "aws_redshift_cpuutilization_average", // Metric from Redshift exporter
+          "legendFormat": "{{ClusterIdentifier}}",       // Groups by Redshift cluster
+          "refId": "D"
+        }
+      ]
+    }
+  ],
+  // Dashboard title and unique identifier for easy reference and sharing.
+  "title": "CI/CD Pipeline Dashboard",
+  "uid": "pipeline-dashboard"
+}

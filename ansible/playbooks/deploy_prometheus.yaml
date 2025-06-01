@@ -1,0 +1,39 @@
+---
+# Ansible playbook to deploy Prometheus using Docker
+# This playbook assumes the target host is accessible and has Ansible connectivity.
+
+- name: Deploy Prometheus
+  hosts: prometheus             # The inventory group or host where Prometheus should be deployed
+  become: yes                   # Run tasks with sudo/root privileges
+  tasks:
+    - name: Install Docker      # Ensure Docker is installed on the target host
+      apt:
+        name: docker.io
+        state: present
+      tags: install
+
+    - name: Start Docker service # Make sure Docker service is running
+      service:
+        name: docker
+        state: started
+        enabled: yes
+      tags: install
+
+    - name: Run Prometheus container # Deploy Prometheus as a Docker container
+      docker_container:
+        name: prometheus
+        image: prom/prometheus
+        state: started
+        restart_policy: always
+        ports:
+          - "9090:9090"         # Map host port 9090 to container port 9090
+        volumes:
+          # Mount the Prometheus configuration file from the host to the container
+          - ./docker/prometheus/prometheus.yml:/etc/prometheus/prometheus.yml
+      tags: deploy
+
+    # Optionally, you can mount additional config or rules files here if needed
+
+# Note:
+# - This playbook installs Docker, ensures the service is running, and deploys Prometheus in a container.
+# - The Prometheus config file is mounted from the project directory for easy updates.

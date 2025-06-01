@@ -1,0 +1,36 @@
+---
+# This Kubernetes manifest deploys Grafana as a Deployment resource.
+# Grafana is used for visualizing metrics collected by Prometheus and other sources.
+
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: grafana                  # Name of the Deployment resource
+  labels:
+    app: grafana                 # Label for selecting this app
+spec:
+  replicas: 1                    # Number of Grafana pods to run
+  selector:
+    matchLabels:
+      app: grafana               # Selector to match pods with this label
+  template:
+    metadata:
+      labels:
+        app: grafana             # Pod label for selection and service discovery
+    spec:
+      containers:
+        - name: grafana
+          image: grafana/grafana # Official Grafana Docker image
+          ports:
+            - containerPort: 3000    # Grafana web UI
+          volumeMounts:
+            - name: grafana-storage
+              mountPath: /var/lib/grafana  # Persist Grafana data (dashboards, users, etc.)
+      volumes:
+        - name: grafana-storage
+          emptyDir: {}                 # Use an ephemeral volume (replace with PVC for persistence)
+
+# Notes:
+# - For production, replace 'emptyDir' with a PersistentVolumeClaim to persist Grafana data.
+# - Expose this deployment with a Service for network access.
+# - You can add environment variables to configure Grafana (e.g., admin password, data sources).

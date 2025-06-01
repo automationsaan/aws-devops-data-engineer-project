@@ -1,0 +1,20 @@
+# Python requirements for AWS DevOps Data Engineer Project
+# These packages support Glue ETL scripts, automation, and local testing.
+
+boto3               # AWS SDK for Python (automation, scripting, Glue, Lambda, etc.)
+awscli              # AWS CLI for scripting and automation
+pandas              # Data manipulation in Glue ETL scripts
+pyarrow             # Parquet/Arrow support for Glue and Pandas
+requests            # For API calls during data ingestion or automation
+sqlalchemy          # Database connections (RDS, Redshift, etc.)
+psycopg2-binary     # PostgreSQL driver for Redshift/RDS
+jupyter             # Local development and testing of ETL scripts
+pytest              # Unit testing for Python scripts
+
+# For monitoring/alerting scripts (if needed)
+prometheus_client   # Expose custom metrics to Prometheus
+
+# For YAML/JSON config handling
+pyyaml              # Read/write YAML files (e.g., for config or playbooks)
+
+# Optional: Add more as needed for your ETL or automation scripts

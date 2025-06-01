@@ -1,0 +1,28 @@
+# CloudWatch Exporter Configuration to collect metrics from AWS services
+region: us-east-1
+
+metrics:
+  - aws_namespace: AWS/DMS
+    aws_metric_name: ReplicationLatency
+    dimensions: [ReplicationTaskIdentifier]
+    statistics: [Average]
+
+  - aws_namespace: AWS/Lambda
+    aws_metric_name: Duration
+    dimensions: [FunctionName]
+    statistics: [Average]
+
+  - aws_namespace: AWS/Lambda
+    aws_metric_name: Errors
+    dimensions: [FunctionName]
+    statistics: [Sum]
+
+  - aws_namespace: AWS/Glue
+    aws_metric_name: JobRunTime
+    dimensions: [JobName]
+    statistics: [Average]
+
+  - aws_namespace: AWS/Redshift
+    aws_metric_name: CPUUtilization
+    dimensions: [ClusterIdentifier]
+    statistics: [Average]

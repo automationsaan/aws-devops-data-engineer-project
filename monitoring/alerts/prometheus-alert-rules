@@ -1,0 +1,77 @@
+# Prometheus alerting rules for the data pipeline infrastructure.
+# These rules help detect failures, resource exhaustion, and performance issues early,
+# enabling proactive response and minimizing downtime.
+
+groups:
+  - name: DataPipelineAlerts
+    rules:
+      # ---------------------------------------------------------
+      # Instance Down Alert
+      # ---------------------------------------------------------
+      # Triggers if any monitored instance (server, VM, container, etc.)
+      # is not responding to Prometheus scrapes for more than 2 minutes.
+      # This helps detect outages or network issues quickly.
+      - alert: InstanceDown
+        expr: up == 0
+        for: 2m
+        labels:
+          severity: critical
+        annotations:
+          summary: "Instance {{ $labels.instance }} is down"
+          description: "Prometheus target {{ $labels.instance }} has been down for more than 2 minutes."
+
+      # ---------------------------------------------------------
+      # Jenkins Job Failure Alert
+      # ---------------------------------------------------------
+      # Triggers if a Jenkins job has failed (requires Jenkins Prometheus exporter).
+      # This helps catch CI/CD pipeline failures as soon as they happen.
+      - alert: JenkinsJobFailed
+        expr: jenkins_job_last_build_result{result="FAILURE"} == 1
+        for: 1m
+        labels:
+          severity: warning
+        annotations:
+          summary: "Jenkins job failed"
+          description: "Jenkins job {{ $labels.job }} has failed."
+
+      # ---------------------------------------------------------
+      # High CPU Usage Alert
+      # ---------------------------------------------------------
+      # Triggers if average CPU usage on any instance exceeds 90% for 5 minutes.
+      # This helps detect performance bottlenecks or runaway processes.
+      - alert: HighCPUUsage
+        expr: 100 - (avg by(instance) (rate(node_cpu_seconds_total{mode="idle"}[5m])) * 100) > 90
+        for: 5m
+        labels:
+          severity: warning
+        annotations:
+          summary: "High CPU usage on {{ $labels.instance }}"
+          description: "CPU usage is above 90% for more than 5 minutes."
+
+      # ---------------------------------------------------------
+      # Low Disk Space Alert
+      # ---------------------------------------------------------
+      # Triggers if available disk space on the root filesystem drops below 10% for 10 minutes.
+      # This helps prevent outages due to full disks.
+      - alert: LowDiskSpace
+        expr: (node_filesystem_avail_bytes{mountpoint="/"} / node_filesystem_size_bytes{mountpoint="/"}) * 100 < 10
+        for: 10m
+        labels:
+          severity: critical
+        annotations:
+          summary: "Low disk space on {{ $labels.instance }}"
+          description: "Disk space is less than 10% on {{ $labels.instance }}."
+
+      # ---------------------------------------------------------
+      # High Memory Usage Alert
+      # ---------------------------------------------------------
+      # Triggers if memory usage on any instance exceeds 90% for 5 minutes.
+      # This helps detect memory leaks or insufficient memory allocation.
+      - alert: HighMemoryUsage
+        expr: (1 - (node_memory_MemAvailable_bytes / node_memory_MemTotal_bytes)) * 100 > 90
+        for: 5m
+        labels:
+          severity: warning
+        annotations:
+          summary: "High memory usage on {{ $labels.instance }}"
+          description: "Memory usage is above 90% for more than 5 minutes."
