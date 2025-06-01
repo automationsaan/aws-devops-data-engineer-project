@@ -6,12 +6,16 @@ This project demonstrates a modern, end-to-end data engineering pipeline on AWS,
 
 ---
 
-## Architecture
+## Architecture/AWS Services Used
 
 Below is the architecture diagram for the project.  
 **(Replace the image path with your actual image file in the `projects-pics` folder.)**
 
 ![Project Architecture](https://github.com/automationsaan/aws-devops-data-engineer-project/blob/main/project-pics/archtecture-2.png)
+
+![AWS Services Used](https://github.com/automationsaan/aws-devops-data-engineer-project/blob/a058336db595e58a4d47592563c12407dfc0c1c9/project-pics/aws-services.png)
+
+![AWS Services Used](https://github.com/automationsaan/aws-devops-data-engineer-project/blob/a058336db595e58a4d47592563c12407dfc0c1c9/project-pics/aws-services-2.png)
 
 ---
 
