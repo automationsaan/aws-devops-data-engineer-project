@@ -11,7 +11,7 @@ This project demonstrates a modern, end-to-end data engineering pipeline on AWS,
 Below is the architecture diagram for the project.  
 **(Replace the image path with your actual image file in the `projects-pics` folder.)**
 
-![Project Architecture](projects-pics/aws-data-pipeline-architecture.png)
+![Project Architecture](projects-pics/architecture-2.png)
 
 ---
 
