@@ -76,95 +76,130 @@ aws-devops-data-engineer-project/
 
 ### 1. **Clone the Repository**
 
-```bash
-git clone https://github.com/your-org/aws-devops-data-engineer-project.git
+```sh
+git clone https://github.com/automationsaan/aws-devops-data-engineer-project.git
 cd aws-devops-data-engineer-project
 ```
+**Verify:**  
+- Run `ls` or `dir` and confirm you see all project folders (e.g., `terraform/`, `docker/`, `jenkins-pipelines/`, etc.).
 
 ---
 
 ### 2. **Install Python Dependencies**
 
-- Ensure you have Python 3 and pip installed.
-- Install all required Python packages for ETL, automation, and monitoring:
-
-```bash
+```sh
 pip install -r requirements.txt
 ```
+**Verify:**  
+- Run `pip list` and check for packages like `boto3`, `pandas`, `awscli`, etc.
+- Test with:
+  ```sh
+  python -c "import boto3, pandas; print('Python dependencies OK')"
+  ```
 
 ---
 
-### 3. **Provision AWS Infrastructure with Terraform**
+### 3. **Configure AWS CLI**
 
-- Ensure you have [Terraform](https://www.terraform.io/downloads.html) and [AWS CLI](https://docs.aws.amazon.com/cli/latest/userguide/getting-started-install.html) installed and configured (`aws configure`).
-- Navigate to the Terraform directory and initialize:
+```sh
+aws configure
+```
+**Verify:**  
+- Run `aws sts get-caller-identity` to confirm your credentials are working.
 
-```bash
+---
+
+### 4. **Provision AWS Infrastructure with Terraform**
+
+```sh
 cd terraform
 terraform init
 terraform plan
 terraform apply
 ```
-
-- This will create S3 buckets, Glue resources, IAM roles, RDS, Redshift, VPC, and other AWS resources.
+**Verify:**  
+- After `terraform apply`, check the AWS Console for S3 buckets, Glue, IAM roles, etc.
+- Run `terraform state list` to see managed resources.
 
 ---
 
-### 4. **Set Up Jenkins for CI/CD**
+### 5. **Build and Run Jenkins (with Python dependencies)**
 
-- Use the provided Dockerfile or Kubernetes manifests to deploy Jenkins:
-
-**With Docker:**
-```bash
+```sh
 cd ../docker/jenkins
 docker build -t custom-jenkins .
 docker run -d -p 8080:8080 -v jenkins_home:/var/jenkins_home custom-jenkins
 ```
-  - The Jenkins Docker image automatically installs all Python dependencies from `requirements.txt` so your jobs can run Python scripts out-of-the-box.
-
-**With Kubernetes:**
-```bash
-kubectl apply -f ../../kubernetes/jenkins/jenkins-deployment.yaml
-```
-
-- Use Ansible playbooks in `ansible/playbooks/` for automated Jenkins setup if desired.
+**Verify:**  
+- Visit `http://localhost:8080` in your browser. Jenkins should be running.
+- In Jenkins, run a shell step: `pip list` to confirm Python dependencies are available.
 
 ---
 
-### 5. **Configure Jenkins Pipelines**
+### 6. **Set Up Jenkins Pipelines**
 
 - In Jenkins, create two pipelines:
   - **Infrastructure Pipeline:** Use `jenkins-pipelines/infrastructure-pipeline.groovy`
   - **Data Pipeline:** Use `jenkins-pipelines/data-pipeline.groovy`
-- Set up AWS credentials in Jenkins (using environment variables or Jenkins credentials plugin).
+- Set up AWS credentials in Jenkins (via environment variables or Jenkins credentials plugin).
+
+**Verify:**  
+- Run the infrastructure pipeline and check for successful Terraform output.
+- Run the data pipeline and check for successful S3, Glue, DMS, and Lambda steps.
 
 ---
 
-### 6. **Deploy Monitoring Stack (Prometheus & Grafana)**
+### 7. **Deploy Monitoring Stack (Prometheus & Grafana)**
 
-- **With Docker:**
-  - Use the provided Dockerfiles in `docker/prometheus` and `docker/grafana`.
-- **With Kubernetes:**
-  - Apply manifests in `kubernetes/prometheus` and `kubernetes/grafana`.
-
-- Import the provided Grafana dashboard (`monitoring/dashboards/grafana-dashboard.json`) and set up Prometheus alert rules (`monitoring/alerts/prometheus-alert.rules`).
+**With Docker:**
+```sh
+cd ../../docker/prometheus
+# Build and run Prometheus container as needed
+cd ../grafana
+# Build and run Grafana container as needed
+```
+**With Kubernetes:**
+```sh
+kubectl apply -f ../../kubernetes/prometheus/prometheus-deployment.yaml
+kubectl apply -f ../../kubernetes/grafana/grafana-deployment.yaml
+```
+**Verify:**  
+- Visit Grafana at `http://localhost:3000` (or your cluster endpoint).
+- Log in (default: admin/admin), add Prometheus as a data source, and import the provided dashboard.
 
 ---
 
-### 7. **Run the Data Pipeline**
+### 8. **Import Dashboards and Alert Rules**
 
-- Trigger the Jenkins data pipeline. It will:
-  - Ingest data to S3 (Bronze)
-  - Run Glue Crawler and ETL job
-  - Replicate data with DMS
-  - Trigger Lambda for post-processing
+- In Grafana, import `monitoring/dashboards/grafana-dashboard.json`.
+- In Prometheus, load `monitoring/alerts/prometheus-alert.rules`.
+
+**Verify:**  
+- Grafana dashboard panels should show metrics (Jenkins, Lambda, Glue, etc.).
+- Prometheus “Alerts” page should list your alert rules.
 
 ---
 
-### 8. **Monitor and Visualize**
+### 9. **Run and Monitor the Data Pipeline**
 
-- Access Grafana (default: `http://localhost:3000` or your Kubernetes service endpoint).
-- Use the dashboard to monitor pipeline health, job durations, resource usage, and alerts.
+- Trigger the Jenkins data pipeline.
+- Monitor S3 buckets, Glue jobs, DMS tasks, and Lambda invocations in the AWS Console.
+
+**Verify:**  
+- Data appears in S3 Silver bucket after pipeline run.
+- Glue jobs and crawlers show as “Succeeded” in AWS Console.
+- DMS task status is “Running” or “Succeeded.”
+- Lambda function logs appear in CloudWatch.
+
+---
+
+### 10. **Monitor Everything in Grafana**
+
+- Open Grafana and view the imported dashboard.
+
+**Verify:**  
+- You see live metrics for Jenkins builds, Lambda, Glue, DMS, and Redshift.
+- Alerts trigger if thresholds are breached (simulate a failure to test).
 
 ---
 
