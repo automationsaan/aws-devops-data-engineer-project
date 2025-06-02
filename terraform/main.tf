@@ -1,61 +1,37 @@
-# This Terraform configuration sets up an AWS Data Pipeline with a simple S3 copy activity.
-# It includes the necessary provider configuration and backend settings.
+# Main Terraform configuration for AWS DevOps Data Engineer Project
+# This file configures the AWS provider and loads all resources from .tf files in this directory.
+# Each major AWS service (VPC, RDS, S3, Glue, Redshift, IAM) is defined in its own .tf file for clarity and modularity.
 
-# Set aws provider and backend configuration
+terraform {
+  required_version = ">= 1.3.0"
+  # The backend "s3" block is commented out for the initial run.
+  # After the S3 bucket for state is created, uncomment this block and reinitialize Terraform to migrate state.
+  # backend "s3" {
+  #   bucket = "my-terraform-state-bucket"           # Change to your actual S3 bucket for state
+  #   key    = "state/aws-data-pipeline.tfstate"
+  #   region = "us-east-1"
+  # }
+}
+
 provider "aws" {
   region = var.aws_region
 }
 
-terraform {
-  required_version = ">= 1.3.0"
+# All resources are defined in their respective .tf files in this directory:
+# - vpc.tf:      Networking (VPC, subnets, etc.)
+# - rds.tf:      Relational Database Service
+# - s3.tf:       S3 buckets for data lake (bronze, silver, etc.)
+# - glue.tf:     AWS Glue jobs, crawlers, and catalog
+# - redshift.tf: Redshift data warehouse cluster
+# - iam.tf:      IAM roles and policies
 
-# Configure the backend to store the Terraform state in an S3 bucket
-  backend "s3" {
-    bucket = "my-terraform-state-bucket"
-    key    = "state/aws-data-pipeline.tfstate"
-    region = "us-east-1"
-  }
-}
+# No module blocks are needed unless you use actual module directories.
+# Terraform will automatically load and apply all resources defined in *.tf files in this directory.
 
-# main.tf - Main entry point for Terraform configuration
-# This file configures the AWS provider and includes all major infrastructure modules.
+# To add new resources, simply create or edit the appropriate .tf file.
 
-# Configure the AWS provider
-provider "aws" {
-  region = var.aws_region  # Use the region specified in variables.tf
-}
-
-# VPC module or resource - sets up networking for your AWS resources
-module "vpc" {
-  source = "./vpc.tf"  # Reference to your VPC configuration file
-}
-
-# RDS module or resource - sets up a managed relational database
-module "rds" {
-  source = "./rds.tf"
-}
-
-# S3 module or resource - sets up object storage for data and artifacts
-module "s3" {
-  source = "./s3.tf"
-}
-
-# Glue module or resource - sets up AWS Glue for ETL jobs
-module "glue" {
-  source = "./glue.tf"
-}
-
-# Redshift module or resource - sets up a data warehouse cluster
-module "redshift" {
-  source = "./redshift.tf"
-}
-
-# IAM module or resource - sets up roles and permissions for your services
-module "iam" {
-  source = "./iam.tf"
-}
-
-# Notes:
-# - Each module points to a separate .tf file for modularity and clarity.
-# - You can replace 'module' with 'resource' blocks if you are not using modules.
-# - This structure makes it easy to manage and scale your AWS infrastructure.
+# --- State Migration Instructions ---
+# 1. Run 'terraform init' and 'terraform apply' to create all resources, including the S3 state bucket.
+# 2. Uncomment the backend "s3" block above and update with your bucket name if needed.
+# 3. Run 'terraform init -migrate-state' to migrate local state to S3.
+# ------------------------------------

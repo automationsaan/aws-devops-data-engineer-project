@@ -54,8 +54,6 @@ resource "aws_glue_job" "bronze_to_silver" {
     "--target_db"  = aws_glue_catalog_database.silver_db.name
   }
 
-  max_capacity        = 2 # Number of DPUs (adjust as needed)
-  glue_version        = "4.0"
   number_of_workers   = 2
   worker_type         = "Standard"
   description         = "ETL job to transform data from bronze to silver stage"

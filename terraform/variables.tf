@@ -43,6 +43,27 @@ variable "lambda_exec_role_name" {
   default     = "lambda_exec_role"
 }
 
+# Public subnet CIDR blocks
+variable "public_subnet_cidrs" {
+  description = "List of CIDR blocks for public subnets"
+  type        = list(string)
+  # No default is set here; value should be provided in terraform.tfvars or via CLI.
+}
+
+# Master username for the RDS instance
+variable "db_username" {
+  description = "Master username for the RDS instance"
+  type        = string
+}
+
+# Master password for the RDS instance
+variable "db_password" {
+  description = "Master password for the RDS instance"
+  type        = string
+  sensitive   = true
+}
+
 # Notes:
 # - You can override these defaults using a terraform.tfvars file or CLI arguments.
+# - For variables without a default (like public_subnet_cidrs), you must provide a value in terraform.tfvars or with -var.
 # - Add more variables as needed for your infrastructure.
