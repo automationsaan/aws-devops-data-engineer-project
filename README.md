@@ -2,7 +2,21 @@
 
 ## Project Overview
 
-This project demonstrates a modern, end-to-end data engineering pipeline on AWS, fully automated with DevOps best practices. It covers the ingestion, transformation, and loading of data using AWS services, with infrastructure managed as code and CI/CD pipelines for both infrastructure and data workflows. The project leverages Python data and automation libraries (see `requirements.txt`) for ETL, orchestration, and monitoring tasks. The project is designed for learning, prototyping, and as a template for production-grade data platforms.
+This project demonstrates a modern, end-to-end data engineering pipeline on AWS, fully automated with DevOps best practices. It covers the ingestion, transformation, and loading of data using AWS services, with infrastructure managed as code and CI/CD pipelines for both infrastructure and data workflows. The project leverages Python data and automation libraries (see `requirements.txt`) for ETL, orchestration, and monitoring tasks.
+
+**Security, streaming, analytics, and orchestration enhancements:**
+- **AWS Secrets Manager** is used to securely store and manage sensitive credentials (such as database usernames and passwords), removing the need to expose secrets in plaintext files.
+- **Amazon QuickSight** is integrated for business intelligence and dashboarding, enabling visualization and analytics on your data lake and warehouse.
+- **Amazon MSK (Managed Streaming for Apache Kafka)**, **Kinesis Data Streams**, and **Kinesis Data Firehose** are included for streaming and real-time ingestion.
+- **AWS Glue Schema Registry** is used for managing streaming data schemas.
+- **Amazon Athena** and **Amazon OpenSearch Service** are available for ad-hoc querying and search analytics.
+- **Amazon EventBridge**, **AWS Step Functions**, and **Amazon MWAA (Managed Airflow)** are available for orchestration and scheduling.
+- **Amazon SageMaker** is included for machine learning and advanced analytics.
+- **AWS Lake Formation** is used for data governance and secure data lake management.
+- **Amazon CloudWatch** and **AWS CloudTrail** are integrated for monitoring and auditing.
+- **AWS CodePipeline**, **CodeBuild**, **CodeCommit**, and **CodeDeploy** are available for CI/CD automation.
+
+The project is designed for learning, prototyping, and as a template for production-grade data platforms.
 
 ---
 
@@ -20,24 +34,66 @@ Below is the architecture diagram for the project.
 
 ## Tools, Services, and Technologies Used
 
-- **AWS Services**
-  - S3 (Data Lake - Bronze & Silver buckets)
-  - Glue (ETL jobs, Crawlers, Data Catalog)
-  - DMS (Database Migration Service for data replication)
-  - Lambda (Serverless post-processing)
-  - Redshift (Data warehouse)
-  - IAM (Access control)
-  - RDS (Relational Database Service)
-  - VPC (Networking)
-- **DevOps & Automation**
+- **Streaming and Batch Ingestion**
+  - AWS DMS (Database Migration Service)
+  - AWS Schema Conversion Tool (manual/script integration)
+  - Apache Kafka / Amazon MSK (Managed Streaming for Apache Kafka)
+  - MSK Connect
+  - Kinesis Data Streams
+  - Kinesis Data Firehose
+  - AWS Glue Schema Registry
+
+- **Storage and Databases**
+  - Amazon S3 (Data Lake)
+  - Amazon EBS, Amazon EFS
+  - AWS Backup
+  - Amazon RDS, Amazon Aurora
+  - Amazon DynamoDB, Amazon Neptune, Amazon DocumentDB, Amazon Timestream
+  - AWS Lake Formation
+
+- **Transforming and Processing**
+  - AWS Glue (ETL, Schema Registry)
+  - AWS Lambda
+  - Amazon EC2, ECR, ECS, EKS, EMR, AWS Batch
+  - Managed Service for Apache Flink
+
+- **Analyse and Query**
+  - Amazon Redshift (Data warehouse)
+  - Amazon Athena (Ad-hoc querying)
+  - Amazon OpenSearch Service (Search analytics)
+
+- **Schedule and Orchestrate**
+  - Amazon EventBridge
+  - AWS Step Functions
+  - Amazon MWAA (Managed Workflows for Apache Airflow)
+  - AWS Glue Workflows
+  - Amazon SNS, Amazon SQS, Amazon AppFlow
+
+- **Consume and Visualise**
+  - Amazon QuickSight (Business intelligence and dashboarding)
+  - Amazon SageMaker (Machine Learning)
+
+- **Operationalise, Maintain, and Monitor**
+  - Amazon CloudWatch (Monitoring)
+  - AWS CloudTrail (Auditing)
+  - Prometheus, Grafana (Custom metrics and dashboards)
+
+- **Authentication, Authorization, Encryption, Governance**
+  - AWS IAM (Access control)
+  - AWS KMS (Encryption)
+  - AWS Secrets Manager (Credential management)
+
+- **ETL Pipeline Concepts**
+  - Slowly Changing Dimensions (SCD I, SCD II) implemented in Glue scripts
+
+- **CI/CD Tools**
   - Terraform (Infrastructure as Code)
   - Jenkins (CI/CD pipelines)
+  - AWS CodeCommit, CodeBuild, CodeDeploy, CodePipeline
+  - AWS CloudFormation, AWS SAM
   - Ansible (Configuration management)
-  - Docker (Containerization for Jenkins, Prometheus, Grafana)
-  - Kubernetes (Orchestration for Jenkins, Prometheus, Grafana)
-- **Monitoring & Alerting**
-  - Prometheus (Metrics collection)
-  - Grafana (Dashboards & visualization)
+  - Docker, Kubernetes
+
 - **Python Data & Automation Libraries**
   - boto3, awscli (AWS automation and scripting)
   - pandas, pyarrow (Data processing and Parquet support)
@@ -47,6 +103,7 @@ Below is the architecture diagram for the project.
   - pytest (Unit testing)
   - prometheus_client (Custom metrics for monitoring)
   - pyyaml (YAML config handling)
+
 - **Other**
   - Bash scripts for automation
   - Prometheus exporters for AWS, Jenkins, etc.
@@ -58,13 +115,66 @@ Below is the architecture diagram for the project.
 ```
 aws-devops-data-engineer-project/
 ├── ansible/
+│   └── playbooks/
+│       ├── deploy_jenkins.yml
+│       ├── deploy_prometheus.yml
+│       └── deploy_grafana.yml
 ├── docker/
+│   ├── jenkins/
+│   │   └── Dockerfile
+│   ├── prometheus/
+│   │   └── prometheus.yml
+│   └── grafana/
+│       └── dashboards/
+│           └── pipeline_dashboard.json
 ├── kubernetes/
+│   ├── jenkins/
+│   │   └── jenkins-deployment.yaml
+│   ├── prometheus/
+│   │   └── prometheus-deployment.yaml
+│   └── grafana/
+│       └── grafana-deployment.yaml
 ├── terraform/
+│   ├── main.tf
+│   ├── variables.tf
+│   ├── outputs.tf
+│   ├── vpc.tf
+│   ├── rds.tf
+│   ├── s3.tf
+│   ├── glue.tf
+│   ├── redshift.tf
+│   ├── iam.tf
+│   ├── secrets.tf
+│   ├── kafka.tf
+│   ├── kinesis.tf
+│   ├── athena.tf
+│   ├── opensearch.tf
+│   ├── lakeformation.tf
+│   ├── orchestration.tf
+│   ├── sagemaker.tf
+│   ├── monitoring.tf
+│   ├── cicd.tf
+│   ├── backup.tf
+│   ├── storage.tf
+│   ├── quicksight.tf
+│   ├── glue_schema.tf
+│   └── terraform.tfvars
 ├── jenkins-pipelines/
+│   ├── infrastructure-pipeline.groovy
+│   └── data-pipeline.groovy
 ├── monitoring/
+│   ├── alerts/
+│   │   └── prometheus-alert.rules
+│   └── dashboards/
+│       └── grafana-dashboard.json
 ├── scripts/
-├── projects-pics/
+│   ├── init-dms.sh
+│   ├── setup-redshift.sh
+│   └── trigger-lambda.sh
+├── project-pics/
+│   ├── archtecture-2.png
+│   ├── aws-services.png
+│   └── aws-services-2.png
 ├── .gitignore
 ├── README.md
 └── requirements.txt
@@ -73,6 +183,50 @@ aws-devops-data-engineer-project/
 ---
 
 ## Step-by-Step Setup Instructions
+
+### 0. **Set Up Your AWS Account and AWS CLI**
+
+#### a. **Create an AWS Account (if you don’t have one)**
+- Go to [https://aws.amazon.com/](https://aws.amazon.com/) and click **Create an AWS Account**.
+- Follow the prompts to set up your account, billing, and root user.
+
+#### b. **Create an IAM User for CLI Access**
+- Log in to the [AWS Console](https://console.aws.amazon.com/).
+- Go to **IAM** > **Users** > **Add users**.
+- Enter a username (e.g., `devops-user`).
+- Select **Access key - Programmatic access**.
+- Click **Next** and assign permissions (e.g., `AdministratorAccess` for full access, or custom policies for least privilege).
+- Complete the steps and **download the `.csv` file** with your Access Key ID and Secret Access Key.
+
+#### c. **Install AWS CLI**
+- Download the AWS CLI for Windows: [AWS CLI v2 Download](https://docs.aws.amazon.com/cli/latest/userguide/getting-started-install.html)
+- Run the installer and follow the prompts.
+
+**Verify installation in Git Bash:**
+```sh
+aws --version
+```
+You should see output like `aws-cli/2.x.x ...`
+
+#### d. **Configure AWS CLI in Git Bash**
+
+In Git Bash, run:
+```sh
+aws configure
+```
+You’ll be prompted for:
+- **AWS Access Key ID:** (from your IAM user)
+- **AWS Secret Access Key:** (from your IAM user)
+- **Default region name:** (e.g., `us-east-1`)
+- **Default output format:** (e.g., `json`)
+
+**Verify:**  
+```sh
+aws sts get-caller-identity
+```
+You should see your AWS account and user information in JSON format.
+
+---
 
 ### 1. **Clone the Repository**
 
@@ -99,31 +253,45 @@ pip install -r requirements.txt
 
 ---
 
-### 3. **Configure AWS CLI**
+### 3. **Provision AWS Infrastructure with Terraform (Initial Local State & State Migration)**
 
-```sh
-aws configure
-```
+#### a. **Initial Apply Using Local State**
+
+1. **Ensure the `backend "s3"` block in `main.tf` is commented out** (as shown in the code):
+    ```terraform
+    terraform {
+      required_version = ">= 1.3.0"
+      # backend "s3" {
+      #   bucket = "my-terraform-state-bucket"
+      #   key    = "state/aws-data-pipeline.tfstate"
+      #   region = "us-east-1"
+      # }
+    }
+    ```
+2. Run:
+    ```sh
+    cd terraform
+    terraform init
+    terraform apply
+    ```
+    This will create all resources, including the S3 bucket for Terraform state.
+
+#### b. **Migrate State to S3 Backend**
+
+1. **Uncomment the `backend "s3"` block in `main.tf`** and set the bucket name, key, and region as needed.
+2. Run:
+    ```sh
+    terraform init -migrate-state
+    ```
+    Terraform will prompt you to migrate your local state to S3. Type `yes` to confirm.
+
 **Verify:**  
-- Run `aws sts get-caller-identity` to confirm your credentials are working.
+- Check the S3 bucket in the AWS Console. You should see a file like `state/aws-data-pipeline.tfstate`.
+- Future Terraform operations will now use remote state in S3.
 
 ---
 
-### 4. **Provision AWS Infrastructure with Terraform**
-
-```sh
-cd terraform
-terraform init
-terraform plan
-terraform apply
-```
-**Verify:**  
-- After `terraform apply`, check the AWS Console for S3 buckets, Glue, IAM roles, etc.
-- Run `terraform state list` to see managed resources.
-
----
-
-### 5. **Build and Run Jenkins (with Python dependencies)**
+### 4. **Build and Run Jenkins (with Python dependencies)**
 
 ```sh
 cd ../docker/jenkins
@@ -136,7 +304,7 @@ docker run -d -p 8080:8080 -v jenkins_home:/var/jenkins_home custom-jenkins
 
 ---
 
-### 6. **Set Up Jenkins Pipelines**
+### 5. **Set Up Jenkins Pipelines**
 
 - In Jenkins, create two pipelines:
   - **Infrastructure Pipeline:** Use `jenkins-pipelines/infrastructure-pipeline.groovy`
@@ -149,7 +317,7 @@ docker run -d -p 8080:8080 -v jenkins_home:/var/jenkins_home custom-jenkins
 
 ---
 
-### 7. **Deploy Monitoring Stack (Prometheus & Grafana)**
+### 6. **Deploy Monitoring Stack (Prometheus & Grafana)**
 
 **With Docker:**
 ```sh
@@ -169,7 +337,7 @@ kubectl apply -f ../../kubernetes/grafana/grafana-deployment.yaml
 
 ---
 
-### 8. **Import Dashboards and Alert Rules**
+### 7. **Import Dashboards and Alert Rules**
 
 - In Grafana, import `monitoring/dashboards/grafana-dashboard.json`.
 - In Prometheus, load `monitoring/alerts/prometheus-alert.rules`.
@@ -180,7 +348,7 @@ kubectl apply -f ../../kubernetes/grafana/grafana-deployment.yaml
 
 ---
 
-### 9. **Run and Monitor the Data Pipeline**
+### 8. **Run and Monitor the Data Pipeline**
 
 - Trigger the Jenkins data pipeline.
 - Monitor S3 buckets, Glue jobs, DMS tasks, and Lambda invocations in the AWS Console.
@@ -193,13 +361,20 @@ kubectl apply -f ../../kubernetes/grafana/grafana-deployment.yaml
 
 ---
 
-### 10. **Monitor Everything in Grafana**
+### 9. **Monitor Everything in Grafana**
 
 - Open Grafana and view the imported dashboard.
 
 **Verify:**  
 - You see live metrics for Jenkins builds, Lambda, Glue, DMS, and Redshift.
 - Alerts trigger if thresholds are breached (simulate a failure to test).
+
+---
+
+### 10. **Provision AWS Secrets Manager and Amazon QuickSight**
+
+- Secrets Manager is used to securely store DB credentials. The secret ARN is output after apply.
+- Amazon QuickSight is provisioned for BI/dashboarding. You must enable QuickSight in the AWS Console before running Terraform for QuickSight resources.
 
 ---
 
@@ -221,6 +396,7 @@ kubectl apply -f ../../kubernetes/grafana/grafana-deployment.yaml
 - Scripts in `scripts/` automate DMS, Redshift, and Lambda tasks.
 - For production, review and adjust security, networking, and cost controls.
 - The Jenkins Docker image is pre-configured to install all Python dependencies at build time for automation and consistency.
+- **To enable all AWS services listed above, you may need to uncomment or add the corresponding Terraform resources in the `/terraform` directory. Some services (like MSK, Kinesis, Athena, OpenSearch, SageMaker, Lake Formation, etc.) are scaffolded for extensibility and can be enabled as your use case grows.**
 
 ---
 
@@ -239,7 +415,7 @@ MIT License
 
 ---
 
-## Authors
+## Author
 
 - Saan Saechao (AKA AutomationSaan)
 
