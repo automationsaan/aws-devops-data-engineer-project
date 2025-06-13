@@ -195,19 +195,134 @@ aws-devops-data-engineer-project/
 
 ---
 
-## Step-by-Step Setup Instructions
+## Getting Started: Step-by-Step Setup Instructions
 
-1. **Configure AWS credentials** and set up your environment.
-2. **Customize variables** in `terraform/terraform.tfvars` as needed.
-3. **Create required JSON files** for DMS (`dms-table-mappings.json`, `dms-task-settings.json`).
-4. **Run Terraform** to provision infrastructure:
-   ```sh
-   cd terraform
-   terraform init
-   terraform apply
-   terraform output -json > ../terraform-outputs.json
-   ```
-5. **Run automation scripts** or trigger your Jenkins pipeline for end-to-end data pipeline execution.
+Follow these steps to get your AWS DevOps Data Engineer Project up and running:
+
+---
+
+### 1. Prerequisites
+
+- **AWS Account** with sufficient permissions (IAM, S3, DMS, Redshift, Glue, etc.)
+- **AWS CLI** installed and configured (`aws configure`)
+- **Terraform** installed (v1.3.0+)
+- **jq** installed (for shell scripts)
+- **psql** (PostgreSQL client) installed (for Redshift setup)
+- **Python 3** and `pip` (for ETL scripts)
+- **Git** installed
+- **(Optional) Jenkins** or another CI/CD tool if you want to run pipelines
+
+---
+
+### 2. Clone the Repository
+
+```sh
+git clone https://github.com/automationsaan/aws-devops-data-engineer-project.git
+cd aws-devops-data-engineer-project
+```
+
+---
+
+### 3. Configure Variables
+
+- Edit `terraform/terraform.tfvars` to set your AWS region, DB credentials, subnet CIDRs, etc.
+- (Optional) Edit other variable files as needed for your environment.
+
+---
+
+### 4. Create Required JSON Files for DMS
+
+In the `terraform/` directory, create:
+- `dms-table-mappings.json` (table selection rules)
+- `dms-task-settings.json` (optional, can be `{}`)
+
+Example for `dms-table-mappings.json`:
+```json
+{
+  "rules": [
+    {
+      "rule-type": "selection",
+      "rule-id": "1",
+      "rule-name": "1",
+      "object-locator": {
+        "schema-name": "%",
+        "table-name": "%"
+      },
+      "rule-action": "include"
+    }
+  ]
+}
+```
+
+---
+
+### 5. Provision Infrastructure with Terraform
+
+```sh
+cd terraform
+terraform init
+terraform plan
+terraform apply
+terraform output -json > ../terraform-outputs.json
+cd ..
+```
+
+---
+
+### 6. Run Automation Scripts (Optional/Recommended)
+
+- **Schema Conversion:**  
+  If using SCT CLI, run:
+  ```sh
+  ./scripts/run_sct.sh
+  ```
+
+- **Start DMS Replication Task:**  
+  ```sh
+  ./scripts/init-dms.sh
+  ```
+
+- **Set Up Redshift Tables:**  
+  ```sh
+  ./scripts/setup-redshift.sh
+  ```
+
+- **Trigger Lambda Function:**  
+  ```sh
+  ./scripts/trigger-lambda.sh
+  ```
+
+---
+
+### 7. (Optional) Run Jenkins Pipelines
+
+- Configure Jenkins to use the `jenkins-pipelines/data-pipeline.groovy` and/or `infrastructure-pipeline.groovy` files.
+- Make sure your Jenkins agent has AWS CLI, Terraform, Python, jq, and psql installed.
+
+---
+
+### 8. Monitor and Validate
+
+- Use AWS Console to monitor resources (DMS, Redshift, Glue, Lambda, etc.).
+- Check CloudWatch logs for troubleshooting.
+- Use QuickSight for BI/dashboarding.
+
+---
+
+### 9. Tear Down Resources (When Done)
+
+```sh
+cd terraform
+terraform destroy
+```
+
+---
+### Tips
+
+- Never commit secrets or credentials to git.
+- Use AWS Secrets Manager for production credentials.
+- Adjust security groups and IAM roles for your environment.
+- Review costs in the AWS Console.
 
 ---
 
