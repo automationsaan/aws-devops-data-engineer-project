@@ -58,6 +58,7 @@ lambda_output.json
 
 # Ignore secrets and sensitive files (add your own patterns as needed)
 secrets.*
+terraform.tfvars
 
 # Ignore VS Code workspace settings file for this project
 aws-devops-data-engineer-project.code-workspace

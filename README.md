@@ -223,10 +223,21 @@ cd aws-devops-data-engineer-project
 
 ---
 
-### 3. Configure Variables
+### 3. Configure Variables Securely
 
-- Edit `terraform/terraform.tfvars` and `terraform/variables.tf` to set your AWS region, DB credentials, subnet CIDRs, etc.
-- (Optional) Edit other variable files as needed for your environment.
+- **DO NOT store sensitive information (like database usernames and passwords) in version control.**
+- Use the provided `terraform/terraform.tfvars.example` file as a template:
+  1. Copy it to `terraform/terraform.tfvars`:
+     ```sh
+     cp terraform/terraform.tfvars.example terraform/terraform.tfvars
+     ```
+  2. Edit `terraform/terraform.tfvars` and fill in your actual values for `db_username`, `db_password`, and any other required variables.
+- **Important:**  
+  Ensure `terraform/terraform.tfvars` is listed in your `.gitignore` file so it is never committed to your repository.  
+  Example `.gitignore` entry:
+  ```
+  terraform/terraform.tfvars
+  ```
 
 ---
 
@@ -319,7 +330,7 @@ terraform destroy
 ---
 ### Tips
 
-- Never commit secrets or credentials to git.
+- **Never commit secrets or credentials to git.**
 - Use AWS Secrets Manager for production credentials.
 - Adjust security groups and IAM roles for your environment.
 - Review costs in the AWS Console.
