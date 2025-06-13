@@ -9,3 +9,9 @@
 # Adjust the CIDR blocks as needed to fit your network design and avoid overlap with other networks.
 
 public_subnet_cidrs = ["10.0.1.0/24", "10.0.2.0/24"]
+
+# db_password:
+# This variable sets the master password for your RDS and Redshift instances.
+# Storing it here allows Terraform to use the password automatically, avoiding interactive prompts.
+# For production, use a secrets manager or environment variable instead of storing plaintext passwords.
+db_password = "MySecurePassword123!"  # <-- Change this to a strong password that

@@ -225,7 +225,7 @@ cd aws-devops-data-engineer-project
 
 ### 3. Configure Variables
 
-- Edit `terraform/terraform.tfvars` to set your AWS region, DB credentials, subnet CIDRs, etc.
+- Edit `terraform/terraform.tfvars` and `terraform/variables.tf` to set your AWS region, DB credentials, subnet CIDRs, etc.
 - (Optional) Edit other variable files as needed for your environment.
 
 ---
