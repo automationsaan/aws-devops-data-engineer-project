@@ -37,7 +37,16 @@ output "lambda_exec_role_arn" {
   value       = aws_iam_role.lambda_execution.arn
 }
 
+# Output the DMS replication task ARN for automation
+# This output allows CI/CD scripts and automation tools to retrieve the ARN of the DMS replication task
+# and use it to start or manage the task without manual intervention.
+output "dms_task_arn" {
+  description = "The ARN of the DMS replication task"
+  value       = aws_dms_replication_task.main.arn
+}
+
 # Notes:
 # - These outputs are shown after 'terraform apply' and can be used in other modules or scripts.
+# - The DMS task ARN output enables fully automated data migration workflows by integrating with scripts or pipelines.
 # - Update resource names if your actual resource blocks use different names.
 # - Add more outputs as needed for your infrastructure.

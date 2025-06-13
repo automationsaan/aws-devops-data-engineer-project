@@ -74,6 +74,16 @@ pipeline {
                 '''
             }
         }
+
+        stage('Schema Conversion') {
+            steps {
+                // Run the AWS SCT CLI script to automate schema conversion
+                sh '''
+                    chmod +x scripts/run_sct.sh
+                    ./scripts/run_sct.sh
+                '''
+            }
+        }
     }
 
     post {

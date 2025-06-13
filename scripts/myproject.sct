@@ -1,0 +1,17 @@
+#!/bin/bash
+# run_sct.sh - Automate AWS SCT CLI schema conversion and apply
+
+# Path to your SCT project file
+SCT_PROJECT="myproject.sct"
+
+# Directory for logs and outputs
+OUTPUT_DIR="sct_output"
+mkdir -p "$OUTPUT_DIR"
+
+# Run schema conversion
+sctcli --project-file "$SCT_PROJECT" --convert --output-dir "$OUTPUT_DIR" > "$OUTPUT_DIR/convert.log" 2>&1
+
+# Apply converted schema to target (optional, if supported by your target DB)
+# sctcli --project-file "$SCT_PROJECT" --apply --output-dir "$OUTPUT_DIR" > "$OUTPUT_DIR/apply.log" 2>&1
+
+echo "SCT CLI schema conversion complete. See $OUTPUT_DIR for logs and outputs."

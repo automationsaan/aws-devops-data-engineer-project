@@ -1,0 +1,17 @@
+{
+  // dms-table-mappings.json - Defines which tables and schemas DMS should migrate
+  // This file is referenced by the DMS replication task in Terraform.
+  // The example below tells DMS to include (migrate) all tables in all schemas from the source database.
+  "rules": [
+    {
+      "rule-type": "selection",        // Specifies this rule is for selecting objects to migrate
+      "rule-id": "1",                  // Unique identifier for the rule
+      "rule-name": "1",                // Name for the rule (can match rule-id)
+      "object-locator": {
+        "schema-name": "%",            // % is a wildcard: match all schemas
+        "table-name": "%"              // % is a wildcard: match all tables
+      },
+      "rule-action": "include"         // Action: include these objects in the migration
+    }
+  ]
+}
