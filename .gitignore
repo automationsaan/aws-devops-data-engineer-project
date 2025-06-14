@@ -61,4 +61,4 @@ secrets.*
 terraform.tfvars
 
 # Ignore VS Code workspace settings file for this project
-aws-devops-data-engineer-project.code-workspace
+git commit git commit -m "Remove terraform.tfvars and workspace file from version control"

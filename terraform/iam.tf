@@ -1,4 +1,4 @@
-# IAM roles for Glue, Lambda, and DMS so these services can run with correct permissions.
+# IAM roles for Glue, Lambda, DMS, and additional services (CodePipeline, Step Functions, MWAA, SageMaker, Firehose, Lake Formation) so these services can run with correct permissions.
 # Each role has a trust policy allowing the respective AWS service to assume it.
 # Managed and custom policies are attached to grant the necessary permissions.
 
@@ -123,9 +123,131 @@ resource "aws_iam_policy_attachment" "dms_attach" {
 }
 
 # -------------------------------
+# CodePipeline Role (for CI/CD automation)
+# -------------------------------
+resource "aws_iam_role" "codepipeline" {
+  name = "codepipeline-role"
+  assume_role_policy = data.aws_iam_policy_document.codepipeline_assume_role_policy.json
+}
+
+data "aws_iam_policy_document" "codepipeline_assume_role_policy" {
+  statement {
+    actions = ["sts:AssumeRole"]
+    principals {
+      type        = "Service"
+      identifiers = ["codepipeline.amazonaws.com"]
+    }
+  }
+}
+
+resource "aws_iam_role_policy_attachment" "codepipeline_attach" {
+  role       = aws_iam_role.codepipeline.name
+  policy_arn = "arn:aws:iam::aws:policy/AWSCodePipelineFullAccess"
+}
+
+# -------------------------------
+# Step Functions Role (for orchestration)
+# -------------------------------
+resource "aws_iam_role" "step_functions" {
+  name = "step-functions-role"
+  assume_role_policy = data.aws_iam_policy_document.step_functions_assume_role_policy.json
+}
+
+data "aws_iam_policy_document" "step_functions_assume_role_policy" {
+  statement {
+    actions = ["sts:AssumeRole"]
+    principals {
+      type        = "Service"
+      identifiers = ["states.amazonaws.com"]
+    }
+  }
+}
+
+resource "aws_iam_role_policy_attachment" "step_functions_attach" {
+  role       = aws_iam_role.step_functions.name
+  policy_arn = "arn:aws:iam::aws:policy/AWSStepFunctionsFullAccess"
+}
+
+# -------------------------------
+# MWAA (Managed Airflow) Execution Role
+# -------------------------------
+resource "aws_iam_role" "mwaa_execution" {
+  name = "mwaa-execution-role"
+  assume_role_policy = data.aws_iam_policy_document.mwaa_assume_role_policy.json
+}
+
+data "aws_iam_policy_document" "mwaa_assume_role_policy" {
+  statement {
+    actions = ["sts:AssumeRole"]
+    principals {
+      type        = "Service"
+      identifiers = ["airflow.amazonaws.com"]
+    }
+  }
+}
+
+resource "aws_iam_role_policy_attachment" "mwaa_execution_attach" {
+  role       = aws_iam_role.mwaa_execution.name
+  policy_arn = "arn:aws:iam::aws:policy/AmazonMWAAFullAccess"
+}
+
+# -------------------------------
+# SageMaker Execution Role
+# -------------------------------
+resource "aws_iam_role" "sagemaker_execution" {
+  name = "sagemaker-execution-role"
+  assume_role_policy = data.aws_iam_policy_document.sagemaker_assume_role_policy.json
+}
+
+data "aws_iam_policy_document" "sagemaker_assume_role_policy" {
+  statement {
+    actions = ["sts:AssumeRole"]
+    principals {
+      type        = "Service"
+      identifiers = ["sagemaker.amazonaws.com"]
+    }
+  }
+}
+
+resource "aws_iam_role_policy_attachment" "sagemaker_execution_attach" {
+  role       = aws_iam_role.sagemaker_execution.name
+  policy_arn = "arn:aws:iam::aws:policy/AmazonSageMakerFullAccess"
+}
+
+# -------------------------------
+# Firehose Role (for Kinesis Firehose delivery stream)
+# -------------------------------
+resource "aws_iam_role" "firehose_role" {
+  name = "firehose-delivery-role"
+  assume_role_policy = data.aws_iam_policy_document.firehose_assume_role_policy.json
+}
+
+data "aws_iam_policy_document" "firehose_assume_role_policy" {
+  statement {
+    actions = ["sts:AssumeRole"]
+    principals {
+      type        = "Service"
+      identifiers = ["firehose.amazonaws.com"]
+    }
+  }
+}
+
+resource "aws_iam_role_policy_attachment" "firehose_attach" {
+  role       = aws_iam_role.firehose_role.name
+  policy_arn = "arn:aws:iam::aws:policy/AmazonS3FullAccess"
+}
+
+# -------------------------------
+# Lake Formation Admin User (optional, for Lake Formation governance)
+# -------------------------------
+resource "aws_iam_user" "admin" {
+  name = "lakeformation-admin"
+}
+
+# -------------------------------
 # Notes:
-# - Each role is created with a trust policy for its service.
-# - Managed policies are attached for Glue and DMS.
-# - Lambda gets both a managed policy (basic execution) and a custom policy for S3 and CloudWatch Logs.
-# - Update S3 bucket ARNs if you change bucket names.
+# - All new roles and user are added to resolve missing resource errors.
+# - Each role is attached to a broad AWS managed policy for demonstration. For production, scope permissions as tightly as possible.
+# - Remove or comment out the IAM user if not using Lake Formation admin user.
+# - Update S3 bucket ARNs in policies if you change bucket names.
 # - Add more permissions as needed for your use case.
