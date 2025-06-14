@@ -58,7 +58,11 @@ resource "aws_dms_replication_task" "main" {
   source_endpoint_arn          = aws_dms_endpoint.source.endpoint_arn
   target_endpoint_arn          = aws_dms_endpoint.target.endpoint_arn
   table_mappings               = file("${path.module}/dms-table-mappings.json") # JSON file describing table mappings
-  replication_task_settings    = file("${path.module}/dms-task-settings.json")  # JSON file for task settings (optional)
+
+  # Optional: Advanced settings for the DMS task.
+  # This line reads the settings from dms-task-settings.json.
+  # If you don't need custom settings, you can comment out or remove this line.
+  replication_task_settings    = file("${path.module}/dms-task-settings.json")
 
   tags = {
     Name = "data-pipeline-dms-task"
@@ -66,7 +70,15 @@ resource "aws_dms_replication_task" "main" {
 }
 
 # Notes:
+# - The replication_task_settings argument must be a single line, not a block.
+# - The file dms-task-settings.json must exist in your terraform directory.
+# - For a minimal valid file, you can use: {}
 # - Update engine_name, ports, and database_name for your actual source and target databases.
-# - Create the referenced JSON files (dms-table-mappings.json, dms-task-settings.json) in your terraform directory.
 # - Ensure your security groups and networking allow connectivity between DMS and your databases.
-# - Use Secrets Manager for credentials in production
+# - Use Secrets Manager for credentials in production.
+
+# --- Additional Guidance ---
+# To resolve the "Invalid value for 'path' parameter" error:
+# - Make sure dms-task-settings.json exists in your terraform directory.
+# - If you do not need it, comment out or remove the replication_task_settings line in the resource above.
+# - For a minimal valid file, you can use: {}

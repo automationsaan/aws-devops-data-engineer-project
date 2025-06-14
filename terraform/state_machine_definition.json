@@ -1,0 +1,10 @@
+{
+  "Comment": "Minimal Step Function definition",
+  "StartAt": "DummyState",
+  "States": {
+    "DummyState": {
+      "Type": "Pass",
+      "End": true
+    }
+  }
+}

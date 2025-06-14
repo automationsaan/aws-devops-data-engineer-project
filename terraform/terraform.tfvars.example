@@ -15,4 +15,4 @@ public_subnet_cidrs = ["10.0.1.0/24", "10.0.2.0/24"]
 # Storing it here allows Terraform to use the password automatically, avoiding interactive prompts.
 # For production, use a secrets manager or environment variable instead of storing plaintext passwords.
 db_username = "your-db-username"
-db_password = "you-db-password"  
+db_password = "your-db-password"  

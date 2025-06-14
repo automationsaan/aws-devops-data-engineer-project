@@ -1,6 +1,7 @@
 # IAM roles for Glue, Lambda, DMS, and additional services (CodePipeline, Step Functions, MWAA, SageMaker, Firehose, Lake Formation) so these services can run with correct permissions.
 # Each role has a trust policy allowing the respective AWS service to assume it.
 # Managed and custom policies are attached to grant the necessary permissions.
+# This version includes permissions for the gold S3 bucket to support the full medallion architecture.
 
 # -------------------------------
 # Glue Service Role
@@ -28,6 +29,41 @@ resource "aws_iam_policy_attachment" "glue_attach" {
   policy_arn = "arn:aws:iam::aws:policy/service-role/AWSGlueServiceRole"
 }
 
+# Custom policy for Glue to access all medallion S3 buckets (bronze, silver, gold)
+resource "aws_iam_policy" "glue_medallion_policy" {
+  name        = "glue-medallion-s3-policy"
+  description = "Allow Glue to access bronze, silver, and gold S3 buckets"
+
+  policy = jsonencode({
+    Version = "2012-10-17"
+    Statement = [
+      {
+        Effect = "Allow"
+        Action = [
+          "s3:GetObject",
+          "s3:PutObject",
+          "s3:DeleteObject",
+          "s3:ListBucket"
+        ]
+        Resource = [
+          "arn:aws:s3:::data-pipeline-bronze-bucket",
+          "arn:aws:s3:::data-pipeline-bronze-bucket/*",
+          "arn:aws:s3:::data-pipeline-silver-bucket",
+          "arn:aws:s3:::data-pipeline-silver-bucket/*",
+          "arn:aws:s3:::data-pipeline-gold-bucket",
+          "arn:aws:s3:::data-pipeline-gold-bucket/*"
+        ]
+      }
+    ]
+  })
+}
+
+resource "aws_iam_policy_attachment" "glue_medallion_policy_attach" {
+  name       = "glue-medallion-policy-attach"
+  roles      = [aws_iam_role.glue_role.name]
+  policy_arn = aws_iam_policy.glue_medallion_policy.arn
+}
+
 # -------------------------------
 # Lambda Execution Role
 # -------------------------------
@@ -47,7 +83,7 @@ resource "aws_iam_role" "lambda_execution" {
   })
 }
 
-# Custom policy for Lambda: S3 read/write and CloudWatch Logs
+# Custom policy for Lambda: S3 read/write and CloudWatch Logs (now includes gold bucket)
 resource "aws_iam_policy" "lambda_custom_policy" {
   name        = "lambda-s3-logs-policy"
   description = "Allow Lambda to access S3 buckets and write logs to CloudWatch"
@@ -66,7 +102,9 @@ resource "aws_iam_policy" "lambda_custom_policy" {
           "arn:aws:s3:::data-pipeline-bronze-bucket",
           "arn:aws:s3:::data-pipeline-bronze-bucket/*",
           "arn:aws:s3:::data-pipeline-silver-bucket",
-          "arn:aws:s3:::data-pipeline-silver-bucket/*"
+          "arn:aws:s3:::data-pipeline-silver-bucket/*",
+          "arn:aws:s3:::data-pipeline-gold-bucket",
+          "arn:aws:s3:::data-pipeline-gold-bucket/*"
         ]
       },
       {
@@ -248,6 +286,7 @@ resource "aws_iam_user" "admin" {
 # Notes:
 # - All new roles and user are added to resolve missing resource errors.
 # - Each role is attached to a broad AWS managed policy for demonstration. For production, scope permissions as tightly as possible.
+# - Custom policies for Glue and Lambda now include access to the gold S3 bucket for full medallion support.
 # - Remove or comment out the IAM user if not using Lake Formation admin user.
 # - Update S3 bucket ARNs in policies if you change bucket names.
 # - Add more permissions as needed for your use case.

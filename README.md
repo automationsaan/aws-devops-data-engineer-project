@@ -4,27 +4,27 @@
 
 This project demonstrates a modern, end-to-end data engineering pipeline on AWS, fully automated with DevOps best practices. It covers the ingestion, transformation, and loading of data using AWS services, with infrastructure managed as code and CI/CD pipelines for both infrastructure and data workflows. The project leverages Python data and automation libraries (see `requirements.txt`) for ETL, orchestration, and monitoring tasks.
 
-**Security, streaming, analytics, and orchestration enhancements:**
-- **AWS Secrets Manager** is used to securely store and manage sensitive credentials (such as database usernames and passwords), removing the need to expose secrets in plaintext files.
-- **Amazon QuickSight** is integrated for business intelligence and dashboarding, enabling visualization and analytics on your data lake and warehouse.
-- **Amazon MSK (Managed Streaming for Apache Kafka)**, **Kinesis Data Streams**, and **Kinesis Data Firehose** are included for streaming and real-time ingestion.
-- **AWS Glue Schema Registry** is used for managing streaming data schemas.
-- **Amazon Athena** and **Amazon OpenSearch Service** are available for ad-hoc querying and search analytics.
-- **Amazon EventBridge**, **AWS Step Functions**, and **Amazon MWAA (Managed Airflow)** are available for orchestration and scheduling.
-- **Amazon SageMaker** is included for machine learning and advanced analytics.
-- **AWS Lake Formation** is used for data governance and secure data lake management.
-- **Amazon CloudWatch** and **AWS CloudTrail** are integrated for monitoring and auditing.
-- **AWS CodePipeline**, **CodeBuild**, **CodeCommit**, and **CodeDeploy** are available for CI/CD automation.
-- **AWS DMS (Database Migration Service)** is used for batch and continuous data migration between heterogeneous databases.
-- **Automation scripts** (`init-dms.sh`, `setup-redshift.sh`, `trigger-lambda.sh`) are included for hands-off pipeline execution.
+**Key Features and Enhancements:**
+- **Full Medallion Architecture:** Implements bronze (raw), silver (curated), and gold (analytics-ready) layers using S3, Glue, and Athena for scalable, modular data lake design.
+- **Security:** AWS Secrets Manager is used to securely store and manage sensitive credentials (such as database usernames and passwords), removing the need to expose secrets in plaintext files.
+- **Streaming and Real-Time Ingestion:** Amazon MSK (Kafka), Kinesis Data Streams, and Kinesis Data Firehose for streaming and real-time data ingestion.
+- **Schema Management:** AWS Glue Schema Registry for managing streaming data schemas.
+- **Analytics and BI:** Amazon Athena and Amazon QuickSight for ad-hoc querying, analytics, and dashboarding.
+- **Orchestration:** Amazon EventBridge, AWS Step Functions, and Amazon MWAA (Managed Airflow) for workflow orchestration and scheduling.
+- **Machine Learning:** Amazon SageMaker for advanced analytics and ML.
+- **Data Governance:** AWS Lake Formation for secure data lake management.
+- **Monitoring and Auditing:** Amazon CloudWatch and AWS CloudTrail for monitoring and auditing across all medallion layers.
+- **CI/CD Automation:** AWS CodePipeline, CodeBuild, CodeCommit, and CodeDeploy for infrastructure and data pipeline automation.
+- **Database Migration:** AWS DMS (Database Migration Service) for batch and continuous data migration.
+- **Automation Scripts:** (`init-dms.sh`, `setup-redshift.sh`, `trigger-lambda.sh`) for hands-off pipeline execution.
 
 The project is designed for learning, prototyping, and as a template for production-grade data platforms.
 
 ---
 
-## Architecture/AWS Services Used
+## Architecture / AWS Services Used
 
-Below is the architecture diagram for the project.  
+Below is the architecture diagram for the project.
 
 ![Project Architecture](https://github.com/automationsaan/aws-devops-data-engineer-project/blob/main/project-pics/archtecture-2.png)
 
@@ -36,6 +36,11 @@ Below is the architecture diagram for the project.
 
 ## Tools, Services, and Technologies Used
 
+- **Medallion Architecture Layers**
+  - **Bronze:** Raw/ingested data (S3, Glue, Athena)
+  - **Silver:** Cleaned/curated data (S3, Glue, Athena)
+  - **Gold:** Analytics-ready/business-level data (S3, Glue, Athena, QuickSight)
+
 - **Streaming and Batch Ingestion**
   - AWS DMS (Database Migration Service)
   - AWS Schema Conversion Tool (manual/script integration, automated via `run_sct.sh`)
@@ -46,7 +51,7 @@ Below is the architecture diagram for the project.
   - AWS Glue Schema Registry
 
 - **Storage and Databases**
-  - Amazon S3 (Data Lake)
+  - Amazon S3 (Bronze, Silver, Gold buckets)
   - Amazon EBS, Amazon EFS
   - AWS Backup
   - Amazon RDS, Amazon Aurora
@@ -54,14 +59,14 @@ Below is the architecture diagram for the project.
   - AWS Lake Formation
 
 - **Transforming and Processing**
-  - AWS Glue (ETL, Schema Registry)
+  - AWS Glue (ETL, Schema Registry, Crawlers, Jobs for bronze, silver, gold)
   - AWS Lambda
   - Amazon EC2, ECR, ECS, EKS, EMR, AWS Batch
   - Managed Service for Apache Flink
 
 - **Analyse and Query**
   - Amazon Redshift (Data warehouse)
-  - Amazon Athena (Ad-hoc querying)
+  - Amazon Athena (Ad-hoc querying for all medallion layers)
   - Amazon OpenSearch Service (Search analytics)
 
 - **Schedule and Orchestrate**
@@ -72,12 +77,12 @@ Below is the architecture diagram for the project.
   - Amazon SNS, Amazon SQS, Amazon AppFlow
 
 - **Consume and Visualise**
-  - Amazon QuickSight (Business intelligence and dashboarding)
+  - Amazon QuickSight (Business intelligence and dashboarding on gold layer)
   - Amazon SageMaker (Machine Learning)
 
 - **Operationalise, Maintain, and Monitor**
   - Amazon CloudWatch (Monitoring)
-  - AWS CloudTrail (Auditing)
+  - AWS CloudTrail (Auditing for bronze, silver, gold)
   - Prometheus, Grafana (Custom metrics and dashboards)
 
 - **Authentication, Authorization, Encryption, Governance**
@@ -161,6 +166,9 @@ aws-devops-data-engineer-project/
 │   ├── quicksight.tf
 │   ├── glue_schema.tf
 │   ├── dms.tf
+│   ├── dms-table-mappings.json
+│   ├── dms-task-settings.json
+│   ├── state_machine_definition.json
 │   └── terraform.tfvars
 ├── jenkins-pipelines/
 │   ├── infrastructure-pipeline.groovy
@@ -196,10 +204,6 @@ aws-devops-data-engineer-project/
 ---
 
 ## Getting Started: Step-by-Step Setup Instructions
-
-Follow these steps to get your AWS DevOps Data Engineer Project up and running:
-
----
 
 ### 1. Prerequisites
 
@@ -241,11 +245,12 @@ cd aws-devops-data-engineer-project
 
 ---
 
-### 4. Create Required JSON Files for DMS
+### 4. Create Required JSON Files for DMS and Step Functions
 
 In the `terraform/` directory, create:
 - `dms-table-mappings.json` (table selection rules)
 - `dms-task-settings.json` (optional, can be `{}`)
+- `state_machine_definition.json` (required for Step Functions)
 
 Example for `dms-table-mappings.json`:
 ```json
@@ -262,6 +267,25 @@ Example for `dms-table-mappings.json`:
       "rule-action": "include"
     }
   ]
+}
+```
+
+Example for `dms-task-settings.json` (minimal):
+```json
+{}
+```
+
+Example for `state_machine_definition.json` (minimal):
+```json
+{
+  "Comment": "Minimal Step Function definition",
+  "StartAt": "DummyState",
+  "States": {
+    "DummyState": {
+      "Type": "Pass",
+      "End": true
+    }
+  }
 }
 ```
 
@@ -328,6 +352,7 @@ terraform destroy
 ```
 
 ---
+
 ### Tips
 
 - **Never commit secrets or credentials to git.**
@@ -343,6 +368,7 @@ terraform destroy
 - Use `terraform destroy` to tear down resources when done.
 - Review AWS CloudWatch for service-specific logs.
 - Ensure all AWS resource names are unique per account/region.
+- Validate all JSON files (no comments, valid syntax).
 
 ---
 
