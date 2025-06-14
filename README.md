@@ -5,11 +5,11 @@
 This project demonstrates a modern, end-to-end data engineering pipeline on AWS, fully automated with DevOps best practices. It covers the ingestion, transformation, and loading of data using AWS services, with infrastructure managed as code and CI/CD pipelines for both infrastructure and data workflows. The project leverages Python data and automation libraries (see `requirements.txt`) for ETL, orchestration, and monitoring tasks.
 
 **Key Features and Enhancements:**
-- **Full Medallion Architecture:** Implements bronze (raw), silver (curated), and gold (analytics-ready) layers using S3, Glue, and Athena for scalable, modular data lake design.
+- **Full Medallion Architecture:** Implements bronze (raw), silver (curated), and gold (analytics-ready) layers using S3, Glue, Athena, and Redshift for scalable, modular data lake and warehouse design.
 - **Security:** AWS Secrets Manager is used to securely store and manage sensitive credentials (such as database usernames and passwords), removing the need to expose secrets in plaintext files.
 - **Streaming and Real-Time Ingestion:** Amazon MSK (Kafka), Kinesis Data Streams, and Kinesis Data Firehose for streaming and real-time data ingestion.
 - **Schema Management:** AWS Glue Schema Registry for managing streaming data schemas.
-- **Analytics and BI:** Amazon Athena and Amazon QuickSight for ad-hoc querying, analytics, and dashboarding.
+- **Analytics and BI:** Amazon Redshift (data warehouse for analytics and BI), Amazon Athena (ad-hoc querying), and Amazon QuickSight (dashboarding).
 - **Orchestration:** Amazon EventBridge, AWS Step Functions, and Amazon MWAA (Managed Airflow) for workflow orchestration and scheduling.
 - **Machine Learning:** Amazon SageMaker for advanced analytics and ML.
 - **Data Governance:** AWS Lake Formation for secure data lake management.
@@ -37,9 +37,9 @@ Below is the architecture diagram for the project.
 ## Tools, Services, and Technologies Used
 
 - **Medallion Architecture Layers**
-  - **Bronze:** Raw/ingested data (S3, Glue, Athena)
-  - **Silver:** Cleaned/curated data (S3, Glue, Athena)
-  - **Gold:** Analytics-ready/business-level data (S3, Glue, Athena, QuickSight)
+  - **Bronze:** Raw/ingested data (S3, Glue, Athena, Redshift)
+  - **Silver:** Cleaned/curated data (S3, Glue, Athena, Redshift)
+  - **Gold:** Analytics-ready/business-level data (S3, Glue, Athena, Redshift, QuickSight)
 
 - **Streaming and Batch Ingestion**
   - AWS DMS (Database Migration Service)
@@ -52,6 +52,7 @@ Below is the architecture diagram for the project.
 
 - **Storage and Databases**
   - Amazon S3 (Bronze, Silver, Gold buckets)
+  - Amazon Redshift (Data warehouse for analytics and BI)
   - Amazon EBS, Amazon EFS
   - AWS Backup
   - Amazon RDS, Amazon Aurora
@@ -65,7 +66,7 @@ Below is the architecture diagram for the project.
   - Managed Service for Apache Flink
 
 - **Analyse and Query**
-  - Amazon Redshift (Data warehouse)
+  - Amazon Redshift (Data warehouse for analytics and BI)
   - Amazon Athena (Ad-hoc querying for all medallion layers)
   - Amazon OpenSearch Service (Search analytics)
 
@@ -77,7 +78,7 @@ Below is the architecture diagram for the project.
   - Amazon SNS, Amazon SQS, Amazon AppFlow
 
 - **Consume and Visualise**
-  - Amazon QuickSight (Business intelligence and dashboarding on gold layer)
+  - Amazon QuickSight (Business intelligence and dashboarding on gold layer and Redshift)
   - Amazon SageMaker (Machine Learning)
 
 - **Operationalise, Maintain, and Monitor**
@@ -340,7 +341,7 @@ cd ..
 
 - Use AWS Console to monitor resources (DMS, Redshift, Glue, Lambda, etc.).
 - Check CloudWatch logs for troubleshooting.
-- Use QuickSight for BI/dashboarding.
+- Use QuickSight for BI/dashboarding and Redshift analytics.
 
 ---
 
