@@ -85,10 +85,10 @@ Below is the architecture diagram for the project.
 - **Operationalize, Maintain, and Monitor**
   - Amazon CloudWatch (Monitoring)
   - AWS CloudTrail (Auditing for bronze, silver, gold)
-  - **Prometheus** (metrics collection for AWS and infrastructure)
-  - **Grafana** (dashboarding and visualization for Prometheus and CloudWatch metrics)
-  - **Docker** (containerization of Jenkins, Prometheus, Grafana, etc.)
-  - **Kubernetes** (orchestration of containers for scalable, resilient deployments)
+  - Prometheus (metrics collection for AWS and infrastructure)
+  - Grafana (dashboarding and visualization for Prometheus and CloudWatch metrics)
+  - Docker (containerization of Jenkins, Prometheus, Grafana, etc.)
+  - Kubernetes (orchestration of containers for scalable, resilient deployments)
 
 - **Authentication, Authorization, Encryption, Governance**
   - AWS IAM (Access control)
